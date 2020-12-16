@@ -3,7 +3,8 @@ import axios from 'axios'
 const baseUrl = 'https://swapi.dev/api'
 
 const initialState = {
-  planets: []
+  planetsList: [],
+  offset: 1
 }
 
 const FETCH_LIST = 'planet/FETCH_LIST'
@@ -13,14 +14,14 @@ const FETCH_LIST_FAILED = 'planet/FETCH_LIST_FAILED'
 export default function planetsReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_LIST:
-      return
+      return state
     case FETCH_LIST_SUCCESSFUL:
       return {
         ...state,
-        planets: action.payload,
+        planetsList: action.payload,
       }
     case FETCH_LIST_FAILED:
-      return
+      return state
     default:
       return state
   }
@@ -29,8 +30,10 @@ export default function planetsReducer(state = initialState, action) {
 // actions
 
 export const fetchList = () => async (dispatch, getState) => {
+
+  const {offset} = getState().planets
   try {
-    const res = await axios.get(`${baseUrl}/planets/?page=1`)
+    const res = await axios.get(`${baseUrl}/planets/?page=${offset}`)
     dispatch({
       type: FETCH_LIST_SUCCESSFUL,
       payload: res.data.results,
