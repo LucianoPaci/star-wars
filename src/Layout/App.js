@@ -1,6 +1,5 @@
 
-import './App.css';
-import PlanetList from './Pages/PlanetList'
+import PlanetList from '../Pages/PlanetList'
 
 function App() {
   return (
