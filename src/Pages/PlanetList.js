@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react'
+import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import PropTypes from 'prop-types'
 
@@ -28,9 +28,10 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   content: {
-    height: 800,
+    height: 600,
     [theme.breakpoints.down('xs')]: {
       height: 600,
+      justifyContent: 'center',
     },
   },
 }))
@@ -40,10 +41,21 @@ function PlanetList() {
   const [currentPage, setCurrentPage] = useState(1)
   const classes = useStyles()
 
+  const { loading, count, error, planetsList } = useSelector((store) => store.planets)
+
+  const currentPlanets = useMemo(() => {
+    if (!loading && !error) {
+      return planetsList
+    }
+  }, [error, loading, planetsList]);
+  console.log('🚀 ~ file: planetList.js ~ line 51 ~ currentPlanets ~ currentPlanets', currentPlanets)
+
   useEffect(() => {
-    dispatch(fetchList(currentPage))
+    if(!loading && !error) {
+        dispatch(fetchList(currentPage))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage])
+  }, [currentPage, error])
 
   const handlePaginationClick = (event, number) => {
     setCurrentPage(number)
@@ -54,9 +66,11 @@ function PlanetList() {
 
   const dispatch = useDispatch()
 
-  const list = useSelector((store) => store.planets.planetsList)
-  const loading = useSelector((store) => store.planets.loading)
-  const count = useSelector((store) => store.planets.count)
+
+
+//   const selectedItems = useMemo(() => {
+
+//   }, [planetsList])
 
   return (
     <>
@@ -66,7 +80,7 @@ function PlanetList() {
             <CircularProgress />
           ) : (
             <>
-              {list.map((item) => (
+              {planetsList.map((item) => (
                 <Grid item xs={5} key={item.name}>
                   <Tooltip title={item.name}>
                     <Card
