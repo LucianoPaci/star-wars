@@ -11,6 +11,7 @@ import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded'
 import { fetchList } from '../state/planetsDucks'
 import { makeStyles } from '@material-ui/styles'
 import { IconButton } from '@material-ui/core'
+import { useHistory } from 'react-router-dom'
 
 const useStyles = makeStyles((theme) => ({
   footer: {
@@ -39,34 +40,59 @@ const useStyles = makeStyles((theme) => ({
 function PlanetList() {
   // const [list, setList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
+  const history = useHistory()
   const classes = useStyles()
+  const dispatch = useDispatch()
 
-  const { loading, count, error, planetsList } = useSelector((store) => store.planets)
+  const { loading, count, error, planetsList, planetsById, paginatedPlanetsList} = useSelector((store) => store.planets)
+
+  console.log('🚀 ~ file: planetList.js ~ line 51 ~ PlanetList ~ planetsById', paginatedPlanetsList)
 
   const currentPlanets = useMemo(() => {
     if (!loading && !error) {
+      // return paginatedPlanetsList[currentPage]
+      console.log('paginatedPlanetsList',paginatedPlanetsList)
       return planetsList
     }
-  }, [error, loading, planetsList]);
-  console.log('🚀 ~ file: planetList.js ~ line 51 ~ currentPlanets ~ currentPlanets', currentPlanets)
+  }, [error, loading, paginatedPlanetsList, currentPage]);
 
+  
   useEffect(() => {
-    if(!loading && !error) {
+    if(!loading && !error && !currentPlanets?.length > 0) {
         dispatch(fetchList(currentPage))
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, error])
+
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, error, currentPlanets, fetchList, loading, planetsList])
 
   const handlePaginationClick = (event, number) => {
     setCurrentPage(number)
   }
   const handleOnClick = useCallback((name) => {
-    console.log('Clicked ', name)
-  }, [])
+    history.push(`/planets/${name}`)
+  }, [history])
 
-  const dispatch = useDispatch()
+  
 
+const displayedItems = useMemo(() => {
+  if(planetsList && planetsById) {
+    let filteredItems = currentPlanets
 
+    return filteredItems?.map((item) =>(
+      <Grid item xs={5} key={item.name}>
+      <Tooltip title={item.name}>
+        <Card
+          data={item}
+          name={item.name}
+          onClickCard={handleOnClick}
+          hint={`Click to see ${item.name} inhabitants`}
+          content={`Climate: ${item.climate}`}
+        />
+      </Tooltip>
+    </Grid>
+    ))
+  }
+}, [currentPlanets, handleOnClick, planetsList])
 
 //   const selectedItems = useMemo(() => {
 
@@ -75,24 +101,12 @@ function PlanetList() {
   return (
     <>
       <div className={classes.content}>
-        <Grid container justify='space-evenly' alignItems='center'>
+        <Grid container justify='space-evenly' alignItems='center' >
           {loading ? (
             <CircularProgress />
           ) : (
             <>
-              {planetsList.map((item) => (
-                <Grid item xs={5} key={item.name}>
-                  <Tooltip title={item.name}>
-                    <Card
-                      data={item}
-                      name={item.name}
-                      onClickCard={handleOnClick}
-                      hint={`Click to see ${item.name} inhabitants`}
-                      content={`Climate: ${item.climate}`}
-                    />
-                  </Tooltip>
-                </Grid>
-              ))}
+             {displayedItems}
             </>
           )}
         </Grid>

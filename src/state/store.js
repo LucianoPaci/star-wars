@@ -4,12 +4,14 @@ import thunkMiddleware from 'redux-thunk'
 import loggerMiddleware from './middlewares/logger'
 
 import planetsReducer from './planetsDucks'
+import residentsReducer from './residentsDucks'
 
 // https://github.com/zalmoxisus/redux-devtools-extension#12-advanced-store-setup
 
 export default function configureStore(initialState) {
   const rootReducer = combineReducers({
     planets: planetsReducer,
+    residents: residentsReducer
   })
 
   const composeEnhancers =

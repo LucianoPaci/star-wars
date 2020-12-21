@@ -1,9 +1,11 @@
 import axios from 'axios'
+import adapt from '../utils/adapt'
 
 const baseUrl = 'https://swapi.dev/api'
 
 const initialState = {
   planetsList: [],
+  planetsById: [],
   loading: false,
   error: false
 }
@@ -28,7 +30,15 @@ export default function planetsReducer(state = initialState, action) {
         ...state,
         loading: false,
         error: false,
+        // Save list of planets by Pagination
+        paginatedPlanetsList: {
+          [action.meta.pagination]: action.payload.results,
+        },
         planetsList: action.payload.results,
+        planetsById: {
+          ...state?.planetsById,
+          ...adapt(action.payload.results)
+        },
         next: action.payload.next,
         count: action.payload.count
       }
@@ -52,6 +62,9 @@ export const fetchList = (offset = 1) => async (dispatch, getState) => {
     dispatch({
       type: FETCH_LIST_SUCCESSFUL,
       payload: res.data,
+      meta: {
+        pagination: offset
+      }
     })
   } catch (error) {
     dispatch(fetchListFailed(error))
