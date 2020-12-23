@@ -40,23 +40,19 @@ const useStyles = makeStyles((theme) => ({
 function PlanetList() {
   // const [list, setList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
+  console.log('PlanetList ~ currentPage', currentPage)
   const history = useHistory()
   const classes = useStyles()
   const dispatch = useDispatch()
 
   const { loading, count, error, planetsList, planetsById, paginatedPlanetsList} = useSelector((store) => store.planets)
 
-  console.log('🚀 ~ file: planetList.js ~ line 51 ~ PlanetList ~ planetsById', paginatedPlanetsList)
-
   const currentPlanets = useMemo(() => {
-    if (!loading && !error) {
-      // return paginatedPlanetsList[currentPage]
-      console.log('paginatedPlanetsList',paginatedPlanetsList)
-      return planetsList
+    if (!loading && !error && paginatedPlanetsList) {
+      return paginatedPlanetsList[currentPage]
     }
   }, [error, loading, paginatedPlanetsList, currentPage]);
 
-  
   useEffect(() => {
     if(!loading && !error && !currentPlanets?.length > 0) {
         dispatch(fetchList(currentPage))
@@ -65,9 +61,13 @@ function PlanetList() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, error, currentPlanets, fetchList, loading, planetsList])
 
-  const handlePaginationClick = (event, number) => {
+
+
+
+  const handlePaginationClick = useCallback((event, number) => {
     setCurrentPage(number)
-  }
+  }, [])
+
   const handleOnClick = useCallback((name) => {
     history.push(`/planets/${name}`)
   }, [history])
@@ -92,11 +92,9 @@ const displayedItems = useMemo(() => {
     </Grid>
     ))
   }
-}, [currentPlanets, handleOnClick, planetsList])
+}, [currentPlanets, handleOnClick, planetsById, planetsList])
 
-//   const selectedItems = useMemo(() => {
 
-//   }, [planetsList])
 
   return (
     <>

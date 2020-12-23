@@ -32,9 +32,13 @@ export default function planetsReducer(state = initialState, action) {
         error: false,
         // Save list of planets by Pagination
         paginatedPlanetsList: {
-          [action.meta.pagination]: action.payload.results,
+          ...state.paginatedPlanetsList,
+          [action.meta.pagination]: action.payload.results
         },
-        planetsList: action.payload.results,
+        planetsList: {
+          ...state.planetsList,
+          ...action.payload.results
+        },
         planetsById: {
           ...state?.planetsById,
           ...adapt(action.payload.results)
