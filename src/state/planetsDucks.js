@@ -6,6 +6,7 @@ const baseUrl = 'https://swapi.dev/api'
 const initialState = {
   planetsList: [],
   planetsById: [],
+  paginatedPlanetsList: [],
   loading: false,
   error: false
 }
