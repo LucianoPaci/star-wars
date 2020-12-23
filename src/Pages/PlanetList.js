@@ -40,7 +40,6 @@ const useStyles = makeStyles((theme) => ({
 function PlanetList() {
   // const [list, setList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
-  console.log('PlanetList ~ currentPage', currentPage)
   const history = useHistory()
   const classes = useStyles()
   const dispatch = useDispatch()
@@ -48,7 +47,7 @@ function PlanetList() {
   const { loading, count, error, planetsList, planetsById, paginatedPlanetsList} = useSelector((store) => store.planets)
 
   const currentPlanets = useMemo(() => {
-    if (!loading && !error && paginatedPlanetsList) {
+    if (!loading && !error) {
       return paginatedPlanetsList[currentPage]
     }
   }, [error, loading, paginatedPlanetsList, currentPage]);
@@ -58,8 +57,7 @@ function PlanetList() {
         dispatch(fetchList(currentPage))
     }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPage, error, currentPlanets, fetchList, loading, planetsList])
+  }, [currentPage, error, currentPlanets, dispatch, loading, planetsList])
 
 
 
@@ -80,7 +78,6 @@ const displayedItems = useMemo(() => {
 
     return filteredItems?.map((item) =>(
       <Grid item xs={5} key={item.name}>
-      <Tooltip title={item.name}>
         <Card
           data={item}
           name={item.name}
@@ -88,7 +85,6 @@ const displayedItems = useMemo(() => {
           hint={`Click to see ${item.name} inhabitants`}
           content={`Climate: ${item.climate}`}
         />
-      </Tooltip>
     </Grid>
     ))
   }
@@ -119,7 +115,5 @@ const displayedItems = useMemo(() => {
     </>
   )
 }
-
-PlanetList.propTypes = {}
 
 export default PlanetList
