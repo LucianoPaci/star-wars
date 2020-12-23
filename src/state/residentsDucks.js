@@ -30,24 +30,45 @@ export default function residentReducer(state = initialState, action) {
         ...state,
         planetName: action.payload,
       }
-      case FETCH_PLANET: 
+    case FETCH_PLANET:
       return {
         ...state,
         loading: true,
-        error: null
+        error: null,
       }
-      case FETCH_PLANET_SUCCESSFUL: 
+    case FETCH_PLANET_SUCCESSFUL:
       return {
         ...state,
         planet: action.payload.results && action.payload.results[0],
         loading: false,
-        error: null
+        error: null,
       }
-      case FETCH_PLANET_FAILED: 
+    case FETCH_PLANET_FAILED:
       return {
         ...state,
         error: action.payload,
-        loading: false
+        loading: false,
+      }
+    case FETCH_LIST:
+      return {
+        ...state,
+        loading: true,
+      }
+    case FETCH_LIST_SUCCESSFUL:
+      return {
+        ...state,
+        residentsList: action.payload,
+        planetName: action.meta.planetName,
+        [action.meta.planetName]: {
+          residents: action.payload
+        },
+        loading: false,
+      }
+    case FETCH_LIST_FAILED:
+      return {
+        ...state,
+        error: action.payload,
+        loading: false,
       }
     default:
       return state
@@ -60,17 +81,21 @@ export default function residentReducer(state = initialState, action) {
 
 export const fetchList = (planet) => async (dispatch) => {
   try {
-    dispatch(fetchListLoading(planet))
+    dispatch(fetchListLoading())
+    const res = await multipleUrlCalls(planet.residents)
     dispatch({
       type: FETCH_LIST_SUCCESSFUL,
-      payload: await multipleUrlCalls(planet.residents),
+      meta: {
+        planetName: planet.name,
+      },
+      payload: res.map(each => each?.data)
     })
   } catch (error) {
     dispatch(fetchListFailed(error))
   }
 }
 
-const fetchListLoading = (planet) => async (dispatch) => {
+const fetchListLoading = () => async (dispatch) => {
   dispatch({
     type: FETCH_LIST,
   })
@@ -88,27 +113,27 @@ const fetchListFailed = (error) => async (dispatch) => {
 export const fetchPlanet = (planetName) => async (dispatch) => {
   try {
     dispatch(fetchPlanetLoading())
-    const res = await axios.get(`${baseUrl}/planets/?search=${encodeURIComponent(planetName)}`)
+    const res = await axios.get(
+      `${baseUrl}/planets/?search=${encodeURIComponent(planetName)}`
+    )
     dispatch({
       type: FETCH_PLANET_SUCCESSFUL,
-      payload: res.data
+      payload: res.data,
     })
-
   } catch (error) {
     dispatch(fetchPlanetFailed(error))
-
   }
 }
 
 const fetchPlanetLoading = () => async (dispatch) => {
   dispatch({
-    type: FETCH_LIST,
+    type: FETCH_PLANET,
   })
 }
 
 const fetchPlanetFailed = (error) => async (dispatch) => {
   dispatch({
-    type: FETCH_LIST_FAILED,
+    type: FETCH_PLANET_FAILED,
     payload: error,
   })
 }
@@ -122,7 +147,8 @@ export const selectPlanet = (planet) => (dispatch) => {
 
 // Utils
 
-const multipleUrlCalls = async (urls) => {
+
+async function multipleUrlCalls(urls) {
   const promises = await Promise.all(
     urls.map((url) => {
       url = url.replace('http', 'https')
