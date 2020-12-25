@@ -1,10 +1,16 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
-import { fetchList, fetchPlanet, selectPlanet, selectResident } from '../state/residentsDucks'
+import {
+  fetchList,
+  fetchPlanet,
+  selectPlanet,
+  selectResident,
+} from '../state/residentsDucks'
 
 import Grid from '@material-ui/core/Grid'
 import Card from '../components/ActionCard'
+import { CircularProgress } from '@material-ui/core'
 
 /**
  *
@@ -34,6 +40,7 @@ function ResidentList({ match }) {
   const dispatch = useDispatch()
   const [message, setMessage] = useState()
   let planet = usePlanet(match)
+  console.log('ResidentList ~ planet', planet)
 
   // fetch planet from params
   useEffect(() => {
@@ -44,7 +51,10 @@ function ResidentList({ match }) {
   }, [match.params.id, dispatch, planetName])
 
   useEffect(() => {
-    if (!residents && planet?.residents?.length) {
+    if (
+      (!residents && planet?.residents?.length) ||
+      (planet && planetName !== match.params.id)
+    ) {
       setMessage('')
       dispatch(fetchList(planet))
     } else if (!planet) {
@@ -52,12 +62,23 @@ function ResidentList({ match }) {
     } else {
       setMessage(`This planet doesn't have residents`)
     }
-  }, [dispatch, planet, match.params.id, match, residents, residentsList])
+  }, [
+    dispatch,
+    planet,
+    match.params.id,
+    match,
+    residents,
+    residentsList,
+    planetName,
+  ])
 
-  const handleOnClick = useCallback( async (name) => {
-    dispatch(selectResident(name))
-    await history.push(`/residents/${name}`)
-  }, [history, dispatch])
+  const handleOnClick = useCallback(
+    async (name) => {
+      dispatch(selectResident(name))
+      await history.push(`/residents/${name}`)
+    },
+    [history, dispatch]
+  )
 
   const handleGoBack = useCallback(async () => {
     dispatch(selectPlanet(''))
@@ -78,12 +99,28 @@ function ResidentList({ match }) {
     ))
   }, [handleOnClick, residentsList])
 
-  return mappedResidents.length ? (
+  return (
     <Grid container justify='space-evenly' alignItems='center'>
-      {mappedResidents}
+      {mappedResidents.length ? (
+        mappedResidents
+      ) : (
+        <>
+          {message ? (
+            <Grid item>
+              <Card
+                name={message}
+                onClickCard={handleGoBack}
+                content={'Go Back'}
+              />
+            </Grid>
+          ) : (
+            <Grid item>
+              <CircularProgress />
+            </Grid>
+          )}
+        </>
+      )}
     </Grid>
-  ) : (
-    <div>{message ? message : 'Loading...'}</div>
   )
 }
 

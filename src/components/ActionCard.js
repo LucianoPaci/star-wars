@@ -26,7 +26,7 @@ function CustomCard({ data, onClickCard, name, hint, content}) {
   return (
     <Card variant='outlined' className={classes.root}>
         <CardActionArea onClick={handleClickCard}>
-          <CardHeader title={data.name} />
+          <CardHeader title={data?.name || name} />
           <CardContent>{content}</CardContent>
         </CardActionArea>
     </Card>
