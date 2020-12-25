@@ -47,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function PlanetList() {
-  // const [list, setList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
   const [searchPlanetText, setSearchPlanetText] = useState('')
   const history = useHistory()
