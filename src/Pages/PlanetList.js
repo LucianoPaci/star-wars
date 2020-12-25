@@ -38,6 +38,12 @@ const useStyles = makeStyles((theme) => ({
       justifyContent: 'center',
     },
   },
+  searchBar:  {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+
+  }
 }))
 
 function PlanetList() {
@@ -118,7 +124,7 @@ function PlanetList() {
 
   return (
     <>
-      <div id='search-input'>
+      <div id='search-input' className={classes.searchBar}>
         <SearchInput
           placeholder='Search Planet'
           onChange={setSearchPlanetText}
