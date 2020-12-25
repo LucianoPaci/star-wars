@@ -5,6 +5,7 @@ const baseUrl = 'https://swapi.dev/api'
 const initialState = {
   residentsList: [],
   planetName: null,
+  resident: null,
   loading: false,
   error: null,
 }
@@ -19,7 +20,12 @@ const FETCH_PLANET = 'resident/FETCH_PLANET'
 const FETCH_PLANET_SUCCESSFUL = 'resident/FETCH_PLANET_SUCCESSFUL'
 const FETCH_PLANET_FAILED = 'resident/FETCH_PLANET_FAILED'
 
+const FETCH_RESIDENT = 'resident/FETCH_RESIDENT'
+const FETCH_RESIDENT_SUCCESSFUL = 'resident/FETCH_RESIDENT_SUCCESSFUL'
+const FETCH_RESIDENT_FAILED = 'resident/FETCH_RESIDENT_FAILED'
+
 const SELECT_PLANET = 'resident/SELECT_PLANET'
+const SELECT_RESIDENT = 'resident/SELECT_RESIDENT'
 
 // reducer
 
@@ -60,7 +66,7 @@ export default function residentReducer(state = initialState, action) {
         residentsList: action.payload,
         planetName: action.meta.planetName,
         [action.meta.planetName]: {
-          residents: action.payload
+          residents: action.payload,
         },
         loading: false,
       }
@@ -70,6 +76,32 @@ export default function residentReducer(state = initialState, action) {
         error: action.payload,
         loading: false,
       }
+
+      case SELECT_RESIDENT:
+      return {
+        ...state,
+        residentName: action.payload,
+      }
+
+    case FETCH_RESIDENT:
+      return {
+        ...state,
+        loading: true,
+      }
+    case FETCH_RESIDENT_SUCCESSFUL: {
+      return {
+        ...state,
+        resident: action.payload.results && action.payload.results[0],
+        loading: false,
+      }
+    }
+    case FETCH_RESIDENT_FAILED: {
+      return {
+        ...state,
+        error: action.payload,
+        loading: false,
+      }
+    }
     default:
       return state
   }
@@ -88,7 +120,7 @@ export const fetchList = (planet) => async (dispatch) => {
       meta: {
         planetName: planet.name,
       },
-      payload: res.map(each => each?.data)
+      payload: res.map((each) => each?.data),
     })
   } catch (error) {
     dispatch(fetchListFailed(error))
@@ -138,6 +170,8 @@ const fetchPlanetFailed = (error) => async (dispatch) => {
   })
 }
 
+// SELECT PLANET
+
 export const selectPlanet = (planet) => (dispatch) => {
   dispatch({
     type: SELECT_PLANET,
@@ -145,8 +179,46 @@ export const selectPlanet = (planet) => (dispatch) => {
   })
 }
 
-// Utils
+// SELECT RESIDENT
 
+export const selectResident = (resident) => (dispatch) => {
+  dispatch({
+    type: SELECT_RESIDENT,
+    payload: resident,
+  })
+}
+
+// FETCH RESIDENT
+
+export const fetchResident = (name) => async (dispatch) => {
+  try {
+    dispatch(fetchResidentLoading())
+    const res = await axios.get(
+      `${baseUrl}/people/?search=${encodeURIComponent(name)}`
+    )
+
+    dispatch({
+      type: FETCH_RESIDENT_SUCCESSFUL,
+      payload: res.data,
+    })
+  } catch (error) {
+    dispatch(fetchResidentFailed(error))
+  }
+}
+
+const fetchResidentLoading = () => async (dispatch) => {
+  dispatch({
+    type: FETCH_RESIDENT,
+  })
+}
+
+const fetchResidentFailed = (error) => async (dispatch) => {
+  dispatch({
+    type: FETCH_RESIDENT_FAILED,
+    payload: error,
+  })
+}
+// Utils
 
 async function multipleUrlCalls(urls) {
   const promises = await Promise.all(

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useHistory } from 'react-router-dom'
-import { fetchList, fetchPlanet, selectPlanet } from '../state/residentsDucks'
+import { fetchList, fetchPlanet, selectPlanet, selectResident } from '../state/residentsDucks'
 
 import Grid from '@material-ui/core/Grid'
 import Card from '../components/ActionCard'
@@ -53,6 +53,11 @@ function ResidentList({ match }) {
     }
   }, [dispatch, planet, match.params.id, match, residents, residentsList])
 
+  const handleOnClick = useCallback( async (name) => {
+    dispatch(selectResident(name))
+    await history.push(`/residents/${name}`)
+  }, [history, dispatch])
+
   const handleGoBack = useCallback(async () => {
     dispatch(selectPlanet(''))
     await history.push(`/`)
@@ -66,11 +71,11 @@ function ResidentList({ match }) {
           key={item.name}
           name={item.name}
           actionText={'SEE DETAIL'}
-          onClick={() => console.log('click')}
+          onClickCard={handleOnClick}
         />
       </Grid>
     ))
-  }, [residentsList])
+  }, [handleOnClick, residentsList])
 
   return mappedResidents.length ? (
     <Grid container justify='space-evenly' alignItems='center'>
