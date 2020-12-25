@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 
 import Grid from '@material-ui/core/Grid'
 import CircularProgress from '@material-ui/core/CircularProgress'
+import TextField from '@material-ui/core/TextField'
 import Tooltip from '@material-ui/core/Tooltip'
 import Pagination from '@material-ui/lab/Pagination'
 import Card from '../components/ActionCard'
@@ -12,6 +13,8 @@ import { fetchList } from '../state/planetsDucks'
 import { makeStyles } from '@material-ui/styles'
 import { IconButton } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
+import SearchInput from '../components/SearchInput'
+import { filterItems } from '../utils/filterDiacritics'
 
 const useStyles = makeStyles((theme) => ({
   footer: {
@@ -40,70 +43,97 @@ const useStyles = makeStyles((theme) => ({
 function PlanetList() {
   // const [list, setList] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
+  const [searchPlanetText, setSearchPlanetText] = useState('')
   const history = useHistory()
   const classes = useStyles()
   const dispatch = useDispatch()
 
-  const { loading, count, error, planetsList, planetsById, paginatedPlanetsList} = useSelector((store) => store.planets)
+  const {
+    loading,
+    count,
+    error,
+    planetsList,
+    planetsById,
+    paginatedPlanetsList,
+  } = useSelector((store) => store.planets)
 
   const currentPlanets = useMemo(() => {
     if (!loading && !error) {
       return paginatedPlanetsList[currentPage]
     }
-  }, [error, loading, paginatedPlanetsList, currentPage]);
+  }, [error, loading, paginatedPlanetsList, currentPage])
 
   useEffect(() => {
-    if(!loading && !error && !currentPlanets?.length > 0) {
-        dispatch(fetchList(currentPage))
+    if (!loading && !error && !currentPlanets?.length > 0) {
+      dispatch(fetchList(currentPage))
     }
-
   }, [currentPage, error, currentPlanets, dispatch, loading, planetsList])
-
-
-
 
   const handlePaginationClick = useCallback((event, number) => {
     setCurrentPage(number)
   }, [])
 
-  const handleOnClick = useCallback((name) => {
-    history.push(`/planets/${name}`)
-  }, [history])
+  const handleOnClick = useCallback(
+    (name) => {
+      history.push(`/planets/${name}`)
+    },
+    [history]
+  )
 
-  
+  const displayedItems = useMemo(() => {
+    if (planetsList && planetsById) {
+      let filteredItems = currentPlanets
+      if (searchPlanetText) {
+        const possiblePlanets = Object.keys(planetsById).map((planetKey) => {
+          console.log('planetKey', planetKey)
+          return planetsById[planetKey]
+        })
+        filteredItems = possiblePlanets
+        filteredItems = filterItems(
+          filteredItems,
+          { search: searchPlanetText },
+          ['name']
+        )
+      }
 
-const displayedItems = useMemo(() => {
-  if(planetsList && planetsById) {
-    let filteredItems = currentPlanets
-
-    return filteredItems?.map((item) =>(
-      <Grid item xs={5} key={item.name}>
-        <Card
-          data={item}
-          name={item.name}
-          onClickCard={handleOnClick}
-          hint={`Click to see ${item.name} inhabitants`}
-          content={`Climate: ${item.climate}`}
-        />
-    </Grid>
-    ))
-  }
-}, [currentPlanets, handleOnClick, planetsById, planetsList])
-
-
+      return filteredItems?.map((item) => (
+        <Grid item xs={5} key={item.name}>
+          <Card
+            data={item}
+            name={item.name}
+            onClickCard={handleOnClick}
+            hint={`Click to see ${item.name} inhabitants`}
+            content={`Climate: ${item.climate}`}
+          />
+        </Grid>
+      ))
+    }
+  }, [
+    currentPlanets,
+    handleOnClick,
+    planetsById,
+    planetsList,
+    searchPlanetText,
+  ])
 
   return (
     <>
+      <div id='search-input'>
+        <SearchInput
+          placeholder='Search Planet'
+          onChange={setSearchPlanetText}
+        />
+      </div>
       <div className={classes.content}>
-        <Grid container justify='space-evenly' alignItems='center' >
-          {loading ? (
-            <CircularProgress />
-          ) : (
-            <>
-             {displayedItems}
-            </>
-          )}
-        </Grid>
+        {searchPlanetText && !displayedItems?.length ? (
+          <p>No hay items</p>
+        ) : displayedItems ? (
+          <Grid container justify='space-evenly' alignItems='center'>
+            {loading ? <CircularProgress /> : <>{displayedItems}</>}
+          </Grid>
+        ) : (
+          <p>ERROR</p>
+        )}
       </div>
       <div className={classes.footer}>
         <Pagination
