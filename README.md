@@ -25,3 +25,5 @@ $ npm start
 ## Structure
 
 The project was divided into state and views. Based on [React Ducks](https://github.com/erikras/ducks-modular-redux)
+
+## [Try It](https://star-wars-ui.netlify.app/)
