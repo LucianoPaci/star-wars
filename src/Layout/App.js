@@ -18,31 +18,41 @@ const styles = (theme) => ({
     flex: 1,
     overflow: 'auto',
   },
-  breadcrumbs: { 
-    marginTop: 8,
-    marginLeft: 16,
-    marginBottom: 24
+  breadcrumbs: {
+    marginTop: theme.spacing(1),
+    marginLeft: theme.spacing(2)
   },
 })
 
-function App({ classes, planetName, residentName}) {
-
-
+function App({ classes, planetName, residentName }) {
   return (
     <div className={classes.root}>
       <AppBar position='static'>
         <Toolbar>STAR WARS UI</Toolbar>
       </AppBar>
       <div id='breadcrumbs' className={classes.breadcrumbs}>
-        <Breadcrumbs>
-          <Link to='/'>Planets</Link>
-          {planetName && <Link to={`/planets/${planetName}`}>{planetName}</Link>}
-          {residentName && <Link to={`/residents/${residentName}`}>{residentName}</Link>}
+        <Breadcrumbs separator={'>'}>
+          <Link to='/'>
+            Planets
+          </Link>
+          {planetName && (
+            <Link
+              to={`/planets/${planetName}`}
+            >
+              {planetName}
+            </Link>
+          )}
+          {residentName && (
+            <Link 
+              to={`/residents/${residentName}`}
+            >
+              {residentName}
+            </Link>
+          )}
         </Breadcrumbs>
       </div>
       <div className={classes.content}>
         {routes.map((route) => (
-
           <Route key={route.path} {...route} />
         ))}
       </div>
@@ -54,7 +64,7 @@ function App({ classes, planetName, residentName}) {
 const mapStateToProps = (state) => {
   return {
     planetName: state.residents.planetName,
-    residentName: state.residents.residentName
+    residentName: state.residents.residentName,
   }
 }
 

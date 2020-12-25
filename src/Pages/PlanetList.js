@@ -1,20 +1,16 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import PropTypes from 'prop-types'
 
 import Grid from '@material-ui/core/Grid'
 import CircularProgress from '@material-ui/core/CircularProgress'
-import TextField from '@material-ui/core/TextField'
-import Tooltip from '@material-ui/core/Tooltip'
 import Pagination from '@material-ui/lab/Pagination'
 import Card from '../components/ActionCard'
-import PeopleAltRoundedIcon from '@material-ui/icons/PeopleAltRounded'
 import { fetchList } from '../state/planetsDucks'
 import { makeStyles } from '@material-ui/styles'
-import { IconButton } from '@material-ui/core'
 import { useHistory } from 'react-router-dom'
 import SearchInput from '../components/SearchInput'
 import { filterItems } from '../utils/filterDiacritics'
+import DisplayCard from '../components/DisplayCard'
 
 const useStyles = makeStyles((theme) => ({
   footer: {
@@ -32,9 +28,9 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   content: {
-    height: 600,
+    height: 550,
     [theme.breakpoints.down('xs')]: {
-      height: 600,
+      height: 550,
       justifyContent: 'center',
     },
   },
@@ -124,21 +120,25 @@ function PlanetList() {
   return (
     <>
       <div id='search-input' className={classes.searchBar}>
-        <SearchInput
+        {!error &&  <SearchInput
           placeholder='Search Planet'
           onChange={setSearchPlanetText}
-        />
+        />}
+       
       </div>
       <div className={classes.content}>
+        <Grid container justify='space-evenly' alignItems='center'>
         {searchPlanetText && !displayedItems?.length ? (
-          <p>No hay items</p>
+          <DisplayCard title="No results were found"/>
         ) : displayedItems ? (
-          <Grid container justify='space-evenly' alignItems='center'>
-            {loading ? <CircularProgress /> : <>{displayedItems}</>}
+            <>{displayedItems}</>
+            ) : (
+              <Grid item>
+            <CircularProgress /> 
+
           </Grid>
-        ) : (
-          <p>ERROR</p>
         )}
+        </Grid>
       </div>
       <div className={classes.footer}>
         <Pagination

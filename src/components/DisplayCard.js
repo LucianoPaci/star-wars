@@ -9,30 +9,31 @@ import { makeStyles } from '@material-ui/core/styles'
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: theme.spacing(1),
-    overflowX: 'auto'
+    overflowX: 'auto',
   },
 }))
 
-const mapper = (content) => (
-  Object.keys(content).map(key => ({ key, value: content[key]} ))
-)
+const mapper = (content) =>
+  Object.keys(content).map((key) => ({ key, value: content[key] }))
 
 function DisplayCard({ title, content }) {
   const classes = useStyles()
   return (
     <Card className={classes.root}>
       <CardHeader title={title} />
-      <CardContent>
-        <Typography variant='body2' color='textSecondary' component='p'>
+      {content && (
+        <CardContent>
           <ul>
-            {mapper(content).map(element => (
-              <li key={element.key}>
-                {element.key}: {element.value}
-            </li>
-            ))}
+            <Typography variant='body2' color='textSecondary' component='p'>
+              {mapper(content).map((element) => (
+                <li key={element.key}>
+                  {element.key}: {element.value}
+                </li>
+              ))}
+            </Typography>
           </ul>
-        </Typography>
-      </CardContent>
+        </CardContent>
+      )}
     </Card>
   )
 }
