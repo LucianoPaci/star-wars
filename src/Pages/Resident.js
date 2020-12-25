@@ -6,7 +6,7 @@ import {
   selectPlanet,
 } from '../state/residentsDucks'
 import Grid from '@material-ui/core/Grid'
-
+import CircularProgress from '@material-ui/core/CircularProgress'
 import DisplayCard from '../components/DisplayCard'
 
 function Resident({ match }) {
@@ -14,10 +14,10 @@ function Resident({ match }) {
   const { residentsList, resident: stateResident } = useSelector(
     (state) => state.residents
   )
-  const selectedResident = residentsList?.find(
-      (resident) => resident.name === residentParam
-    ) || stateResident
-  
+  const selectedResident =
+    residentsList?.find((resident) => resident.name === residentParam) ||
+    stateResident
+
   const dispatch = useDispatch()
 
   useEffect(() => {
@@ -26,7 +26,7 @@ function Resident({ match }) {
       dispatch(selectResident(''))
       dispatch(selectPlanet(''))
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -37,18 +37,25 @@ function Resident({ match }) {
 
   const renderResident = useMemo(() => {
     return selectedResident ? (
-      <Grid container justify='space-evenly' alignItems='center'>
       <Grid item xs={6} key={residentParam}>
-        <DisplayCard key={residentParam} title={selectedResident.name} content={selectedResident} />
-      </Grid>
-
+        <DisplayCard
+          key={residentParam}
+          title={selectedResident.name}
+          content={selectedResident}
+        />
       </Grid>
     ) : (
-      <p>Naoting</p>
+      <Grid item>
+        <CircularProgress />
+      </Grid>
     )
   }, [selectedResident, residentParam])
 
-  return renderResident
+  return (
+    <Grid container justify='space-evenly' alignItems='center'>
+      {renderResident}
+    </Grid>
+  )
 }
 
 export default Resident
