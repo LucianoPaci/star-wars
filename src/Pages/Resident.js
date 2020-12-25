@@ -5,31 +5,48 @@ import {
   selectResident,
   selectPlanet,
 } from '../state/residentsDucks'
+import Grid from '@material-ui/core/Grid'
+
+import DisplayCard from '../components/DisplayCard'
 
 function Resident({ match }) {
-    console.log("ACA")
-  const { resident } = useSelector((state) => state.residents)
-  console.log('Resident ~ resident', resident)
-
+  const residentParam = match.params.id
+  const { residentsList, resident: stateResident } = useSelector(
+    (state) => state.residents
+  )
+  const selectedResident = residentsList?.find(
+      (resident) => resident.name === residentParam
+    ) || stateResident
+  
   const dispatch = useDispatch()
 
   useEffect(() => {
     // Cleanup. Remove resident and planet when unmounting
     return () => {
       dispatch(selectResident(''))
-      dispatch(selectPlanet())
+      dispatch(selectPlanet(''))
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
-    if (!resident) {
-      dispatch(fetchResident(match.params.id))
+    if (!selectedResident) {
+      dispatch(fetchResident(residentParam))
     }
-  }, [dispatch,match, match.params.id, resident])
+  }, [dispatch, match, match.params.id, residentParam, selectedResident])
 
   const renderResident = useMemo(() => {
-    return resident && <div>{JSON.stringify(resident)}</div>
-  }, [resident])
+    return selectedResident ? (
+      <Grid container justify='space-evenly' alignItems='center'>
+      <Grid item xs={6} key={residentParam}>
+        <DisplayCard key={residentParam} title={selectedResident.name} content={selectedResident} />
+      </Grid>
+
+      </Grid>
+    ) : (
+      <p>Naoting</p>
+    )
+  }, [selectedResident, residentParam])
 
   return renderResident
 }

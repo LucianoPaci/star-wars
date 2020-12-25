@@ -4,8 +4,8 @@ const baseUrl = 'https://swapi.dev/api'
 
 const initialState = {
   residentsList: [],
-  planetName: null,
-  resident: null,
+  planetName: '',
+  residentName: '',
   loading: false,
   error: null,
 }

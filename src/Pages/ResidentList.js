@@ -39,6 +39,7 @@ function ResidentList({ match }) {
   useEffect(() => {
     if (!planetName || planetName !== match.params.id) {
       dispatch(selectPlanet(match.params.id))
+      dispatch(selectResident(''))
     }
   }, [match.params.id, dispatch, planetName])
 
