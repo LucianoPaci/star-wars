@@ -20,7 +20,20 @@ const styles = (theme) => ({
   },
   breadcrumbs: {
     marginTop: theme.spacing(1),
-    marginLeft: theme.spacing(2)
+    marginLeft: theme.spacing(2),
+  },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 28,
+    backgroundColor: 'rgba(0,0,0,0.8)',
+    color: '#fff',
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: 16,
+    justifyContent: 'center',
+    flexShrink: 0,
   },
 })
 
@@ -32,22 +45,12 @@ function App({ classes, planetName, residentName }) {
       </AppBar>
       <div id='breadcrumbs' className={classes.breadcrumbs}>
         <Breadcrumbs separator={'>'}>
-          <Link to='/'>
-            Planets
-          </Link>
+          <Link to='/'>Planets</Link>
           {planetName && (
-            <Link
-              to={`/planets/${planetName}`}
-            >
-              {planetName}
-            </Link>
+            <Link to={`/planets/${planetName}`}>{planetName}</Link>
           )}
           {residentName && (
-            <Link 
-              to={`/residents/${residentName}`}
-            >
-              {residentName}
-            </Link>
+            <Link to={`/residents/${residentName}`}>{residentName}</Link>
           )}
         </Breadcrumbs>
       </div>
@@ -56,7 +59,11 @@ function App({ classes, planetName, residentName }) {
           <Route key={route.path} {...route} />
         ))}
       </div>
-      {/* <footer>Luciano Paci © 2020</footer> */}
+      <footer className={classes.footer}>
+        <span>
+          Luciano Paci © 2020
+          </span>
+        </footer>
     </div>
   )
 }
