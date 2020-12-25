@@ -27,7 +27,7 @@ const styles = (theme) => ({
     bottom: 0,
     width: '100%',
     height: 28,
-    backgroundColor: 'rgba(0,0,0,0.8)',
+    backgroundColor: 'rgba(0,0,0,0.3)',
     color: '#fff',
     display: 'flex',
     alignItems: 'center',
