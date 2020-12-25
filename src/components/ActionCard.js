@@ -2,10 +2,7 @@ import React, { useCallback } from 'react'
 import {
   CardContent,
   CardHeader,
-  Button,
-  CardActions,
   CardActionArea,
-  Tooltip,
 } from '@material-ui/core'
 import Card from '@material-ui/core/Card'
 
@@ -17,7 +14,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function CustomCard({ data, onClickCard, name, hint, content}) {
+function CustomCard({ data, onClickCard, name, content}) {
   const handleClickCard = useCallback(() => {
     onClickCard(name)
   }, [name, onClickCard])

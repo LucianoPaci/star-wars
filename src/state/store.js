@@ -1,6 +1,5 @@
 import { applyMiddleware, combineReducers, createStore, compose } from 'redux'
 import thunkMiddleware from 'redux-thunk'
-// import * as reducers from './reducers'
 import loggerMiddleware from './middlewares/logger'
 
 import planetsReducer from './planetsDucks'

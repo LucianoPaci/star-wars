@@ -111,11 +111,9 @@ export default function residentReducer(state = initialState, action) {
 // FETCH LIST
 
 export const fetchList = (planet) => async (dispatch) => {
-console.log('fetchList ~ planet', planet)
   try {
     dispatch(fetchListLoading())
     const res = await multipleUrlCalls(planet.residents)
-    console.log('Que manda', res)
     dispatch({
       type: FETCH_LIST_SUCCESSFUL,
       meta: {
@@ -222,13 +220,11 @@ const fetchResidentFailed = (error) => async (dispatch) => {
 // Utils
 
 async function multipleUrlCalls(urls) {
-  console.log('multipleUrlCalls ~ urls', urls)
   const promises = await Promise.all(
     urls.map((url) => {
       url = url.replace('http', 'https')
       return axios.get(url)
     })
   )
-  console.log('multipleUrlCalls ~ promises', promises)
   return promises
 }

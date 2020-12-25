@@ -18,10 +18,7 @@ const routes = [
     path: "/residents/:id",
     component: Resident,
     exact: true,
-  },
-
-  // add resident route
-  // add 404
+  }
 ]
 
 export default routes

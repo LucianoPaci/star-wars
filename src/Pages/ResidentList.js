@@ -40,7 +40,6 @@ function ResidentList({ match }) {
   const dispatch = useDispatch()
   const [message, setMessage] = useState()
   let planet = usePlanet(match)
-  console.log('ResidentList ~ planet', planet)
 
   // fetch planet from params
   useEffect(() => {
@@ -92,7 +91,6 @@ function ResidentList({ match }) {
           data={item}
           key={item.name}
           name={item.name}
-          actionText={'SEE DETAIL'}
           onClickCard={handleOnClick}
         />
       </Grid>
