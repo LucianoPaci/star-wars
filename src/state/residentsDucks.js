@@ -76,7 +76,7 @@ export default function residentReducer(state = initialState, action) {
         loading: false,
       }
 
-      case SELECT_RESIDENT:
+    case SELECT_RESIDENT:
       return {
         ...state,
         residentName: action.payload,
@@ -222,7 +222,6 @@ const fetchResidentFailed = (error) => async (dispatch) => {
 async function multipleUrlCalls(urls) {
   const promises = await Promise.all(
     urls.map((url) => {
-      url = url.replace('http', 'https')
       return axios.get(url)
     })
   )
